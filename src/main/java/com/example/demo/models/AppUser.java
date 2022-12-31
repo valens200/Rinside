@@ -1,37 +1,39 @@
 package com.example.demo.models;
 
 
-import com.example.demo.utils.SubUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users",
+      uniqueConstraints = @UniqueConstraint(
+              name = "email_id_constraint",
+              columnNames = "email"
+      )
+
+)
 @Builder
 public class AppUser {
    @Id
    @GeneratedValue(strategy = GenerationType.AUTO)
    @Column(name = "userId")
     private int userId;
-   @Column(name = "userName")
+   @Column(name = "userName", nullable = false)
     private String userName;
-   @Column(name = "email")
+   @Column(name = "email", nullable = false)
      private String email;
-   @Column(name = "password")
+   @Column(name = "password", nullable = false)
     private String password;
-   @Column(name = "status")
+   @Column(name = "status", nullable = false)
    private String status = "inactive";
    @Column(name = "profilePicture")
    private String profilePicture;
@@ -39,67 +41,26 @@ public class AppUser {
 
    @ManyToMany(
            cascade = CascadeType.ALL,
-           fetch = FetchType.EAGER
+           fetch = FetchType.LAZY
    )
-   Collection<Role> roles = new ArrayList<>();
-    @JsonIgnore
-    @OneToMany(
+   @JsonIgnore
+    Collection<Role> roles = new ArrayList<>();
+
+    @ManyToMany(
             cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
-            @JoinColumn(
-                    name = "followerId",
-                    referencedColumnName = "userId"
-            )
-   List<SubUser> followers = new ArrayList<>();
-
-
     @JsonIgnore
+    @JoinTable(
+            joinColumns =  @JoinColumn(name = "follower_id"), inverseJoinColumns = @JoinColumn(name = "following_id")
+    )
+    Set<AppUser> Followers = new HashSet<>();
     @OneToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
+            cascade = CascadeType.ALL
     )
     @JoinColumn(
-            name = "followingId",
+            name = "commenter_id",
             referencedColumnName = "userId"
     )
-    List<SubUser> followings = new ArrayList<>();
-
-
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "followers_followings",
-            joinColumns = @JoinColumn(
-                    name = "followingId",
-                    referencedColumnName = "userId"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "followerId",
-                    referencedColumnName = "userId"
-            )
-
-    )
-    List<SubUser> mains = new ArrayList<>();
-
-//    @JsonIgnore
-//    @ManyToMany(
-//            cascade = CascadeType.PERSIST,
-//            fetch = FetchType.LAZY
-//    )
-//    @JoinColumn(
-//            name = "userId",
-//            referencedColumnName = "userId"
-//    )
-//    private List<Post> posts = new ArrayList<>();
-//    @OneToMany(
-//            cascade = CascadeType.ALL,
-//            fetch = FetchType.LAZY
-//    )
-//    @JoinColumn(
-//            name = "userId",
-//            referencedColumnName = "userId"
-//    )
-//    private List<Comment> Comments = new ArrayList<>();
-
+    private Set<Comment> comments = new HashSet<>();
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.User;
 
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +37,7 @@ class CommentRepositoryTest {
                 .userName("vava")
                 .password("vava2003")
                 .email("uwavalens2003@gmail.com")
-                .followers(List.of(user1))
+                .Followers(new HashSet<>(List.of(user1)))
                 .build();
         userRepository.save(user);
 
@@ -46,8 +47,6 @@ class CommentRepositoryTest {
         commentRepository.save(comment);
         Post post = Post.builder()
                 .postDescription("hello world")
-                .postOwner("vavalens")
-                .postOwner("vava")
                 .build();
         postRepository.save(post);
         System.out.println("helooooooooooooooooooooooooo");

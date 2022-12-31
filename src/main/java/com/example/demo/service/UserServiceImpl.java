@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.exceptions.NotsavedException;
+import com.example.demo.exceptions.SaveUSerException;
+import com.example.demo.exceptions.NotFoundException;
 import com.example.demo.models.*;
 import com.example.demo.repository.*;
 import com.example.demo.utils.SubUser;
@@ -37,7 +40,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     CommentRepository commentRepository;
 
-    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try{
 
@@ -55,36 +57,66 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public AppUser registerUser(AppUser user) {
-        return userRepository.save(user);
+    public AppUser registerUser(AppUser user)  throws SaveUSerException{
+        AppUser savedUSer = userRepository.save(user);
+        if(savedUSer.equals(null)){
+            throw  new SaveUSerException("Enable to save the user");
+        }else{
+            return savedUSer;
+        }
     }
 
     @Override
-    public Role registerRole(Role role) {
-        return roleRepository.save(role);
+    public Role registerRole(Role role) throws NotsavedException {
+        Role savedRole = roleRepository.save(role);
+        if(role == null)
+            throw new NotsavedException("Enable to save the role");
+        return savedRole;
+    }
+    @Override
+    public Optional<Role> getRoleById(int id) throws  NotFoundException{
+        Optional<Role> role = roleRepository.findById(id);
+        if(role == null){
+            throw  new NotFoundException("role with that id not found");
+        }
+        return role;
     }
 
     @Override
-    public AppUser addRoleTOUser(String email) {
+    public AppUser addRoleTOUser(String email) throws  NotFoundException {
         AppUser user  = userRepository.findByEmail(email);
         Role role  = roleRepository.findByRoleName("ADMIN");
+        if(role == null)
+             new NotFoundException("That role with   not found" );
         user.getRoles().add(role);
         return userRepository.save(user);
     }
 
     @Override
-    public AppUser getByEmail(String email) {
+    public AppUser getByEmail(String email)  throws NotFoundException {
+        AppUser user = userRepository.findByEmail(email);
+        if(user == null)
+               throw new NotFoundException("user with that email not found");
+        return user;
+    }
+
+    public AppUser findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
-    public Collection<AppUser> getAllUsers() {
+    public List<AppUser> getAllUsers() {
         return userRepository.findAll();
     }
 
     @Override
-    public Collection<Role> getAllRoles() {
+    public List<Role> getAllRoles() {
         return roleRepository.findAll();
+    }
+
+    @Override
+    public int getCommenterId(long commentId) {
+        return commentRepository.getCommenterId(commentId);
     }
 
     @Override
@@ -113,24 +145,56 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Optional<Post> getPostById(long id) {
-        return postRepository.findById(id);
+    public Optional<Post> getPostById(long id) throws  NotFoundException {
+        Optional<Post> post =  postRepository.findById(id);
+        if(post == null)
+            throw  new NotFoundException("The post with that id not found");
+        return post;
+    }
+    @Override
+    public Comment getCommentByCommentId(long id) throws NotFoundException {
+        Comment comment = commentRepository.findByCommentId(id);
+        if(comment == null)
+            throw  new NotFoundException("Comment with that id not found");
+        return comment;
+    }
+    @Override
+    public Optional<AppUser> getUserById(int id)  throws NotFoundException {
+        AppUser user = userRepository.findById(id).get();
+        if(user == null)
+            throw new NotFoundException("No user with that email in database");
+        return userRepository.findById(id);
+    }
+    @Override
+    public SubUser getSubUserByEmail(String email) throws NotFoundException {
+        SubUser subUser =  subUserRepository.findByEmail(email);
+        if(subUser == null)
+            throw  new NotFoundException("User with that email not found");
+        return subUser;
+    }
+    @Override
+    public AppUser findUserById(int id)  throws  NotFoundException{
+        AppUser user =  userRepository.findById(id).get();
+        if(user == null)
+            throw new NotFoundException("User with that email not found");
+        return user;
+    }
+    @Override
+    public Comment getComment(long id) throws  NotFoundException{
+        Comment comment = commentRepository.getComment(id);
+        if(comment == null){
+            throw  new NotFoundException("comment with that id is not found");
+        }
+        return  comment;
+    }
+    @Override
+    public List<AppUser> getFollowings(int followerId) {
+        return userRepository.getFollowings(followerId);
     }
 
-
     @Override
-    public Comment getCommentByCommentId(long id) {
-        return commentRepository.findByCommentId(id);
-    }
-
-    @Override
-    public SubUser getSubUserByEmail(String email) {
-        return subUserRepository.findByEmail(email);
-    }
-
-    @Override
-    public SubUser findUserById(int id) {
-        return subUserRepository.getById(id);
+    public List<AppUser> getFollowers(int userId) {
+        return userRepository.getFollowers(userId);
     }
 
 }

@@ -15,14 +15,10 @@ import javax.persistence.*;
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-   private  int id;
+    private  int id;
     @Column(name = "text")
-   private  String text;
-    @Column(name = "senderName")
-   private  String senderName;
-    @Column(name = "receiverName")
-    private  String receiverName;
+    private  String text;
     @Column(name = "room")
-   private String room;
+    private String room;
 
 }

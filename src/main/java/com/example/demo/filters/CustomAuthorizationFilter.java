@@ -32,8 +32,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if( request.getServletPath().equals("/login") || request.getServletPath().equals("/register") || request.getServletPath().equals("/user") ||  request.getServletPath().equals("/token/refresh")){
+        if( request.getServletPath().equals("/auth/login") || request.getServletPath().equals("/auth/register") || request.getServletPath().equals("/user") ||  request.getServletPath().equals("/token/refresh")){
             filterChain.doFilter(request, response);
+            return;
         }else{
             String authorization = request.getHeader("Authorization");
                 try{
@@ -47,18 +48,17 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                         authorities.add(new SimpleGrantedAuthority(role));
                     });
                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(decodedJWT.getSubject(), null, authorities));
-                    filterChain.doFilter(request, response);
-                    }else{
-                        log.error("error {}");
                     }
                 }catch(Exception exception) {
                     response.setStatus(403);
                     messages.put("error_message", exception.getMessage());
-                    messages.put("error", "Invalid token");
                     new ObjectMapper().writeValue(response.getOutputStream(), messages);
-                    log.info("errorrrrrrrrrr  {}", exception.getMessage());
+                    log.info("error {}", exception.getMessage());
 
                 }
+
+            filterChain.doFilter(request, response);
+                return;
         }
 
     }

@@ -10,7 +10,9 @@ import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -26,17 +28,18 @@ public class Comment {
     private long commentId;
     @Column(name = "comment")
     private String comment;
-
-//    @OneToOne(
-//            cascade = CascadeType.ALL,
-//            fetch = FetchType.LAZY
-//    )
-//    @JoinColumn(
-//            name = "userId",
-//            referencedColumnName = "userId"
-//    )
-//    private AppUser commentowner = new AppUser();
-
+    @OneToMany
+    @JoinColumn(
+            name = "liked_comment_id",
+            referencedColumnName = "commentId"
+    )
+    private Set<AppUser> likes = new HashSet<>();
+    @OneToMany
+    @JoinColumn(
+            name = "disliked_comment_id",
+            referencedColumnName = "commentId"
+    )
+    private Set<AppUser> dislikes = new HashSet<>();
 
 }
 
