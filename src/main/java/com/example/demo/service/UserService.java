@@ -30,5 +30,6 @@ public interface UserService {
     public Comment getComment(long id);
     public List<AppUser> getFollowings(int followerId);
     public  List<AppUser> getFollowers(int userId);
+    boolean followUser(int followerId, int followingId);
 
 }

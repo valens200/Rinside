@@ -14,9 +14,8 @@ import java.util.List;
 public class RoleController {
     @Autowired
     UserService userService;
-    @PostMapping("/register")
+    @PostMapping("/save_role")
     public Role registerRole(@RequestBody  Role role){
-        log.info("role {}", role);
         return userService.registerRole(role);
     }
     @GetMapping("/roles")
@@ -24,7 +23,7 @@ public class RoleController {
         return ResponseEntity.ok(userService.getAllRoles());
     }
     @GetMapping("/{id}")
-    public  ResponseEntity<Role> getRole(int id){
+    public  ResponseEntity<Role> getRole( @PathVariable  int id){
         ResponseEntity<Role> roleResponseEntity = null;
         try{
             roleResponseEntity = ResponseEntity.ok(userService.getRoleById(id).get());

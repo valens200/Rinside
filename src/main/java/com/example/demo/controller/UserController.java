@@ -29,7 +29,8 @@ import java.util.*;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-public class UserController {
+@RequestMapping("/user")
+public class UserController extends com.example.demo.controller.Controller {
     Map<String, String> messages = new HashMap<>();
     @Autowired
     UserDetailsService userDetailsService;
@@ -41,16 +42,6 @@ public class UserController {
     BCryptPasswordEncoder passwordEncoder;
     @Autowired
     UserService userService;
-    @PostMapping("/main")
-    public String wellcome() {
-        return "hello user";
-    }
-
-    @GetMapping("/")
-    public String greeting() {
-        System.out.println("hello");
-        return "hello user";
-    }
     @GetMapping("/users")
     public Collection<AppUser> getUsers(HttpServletRequest request, HttpServletResponse response) {
         Collection<AppUser> users = userService.getAllUsers();
@@ -68,26 +59,25 @@ public class UserController {
         return roles;
     }
     @PostMapping("/follow/{follower}/{following}")
-    public  ResponseEntity<AppUser> follow(@PathVariable int follower, @PathVariable int following) throws InterruptedException {
-        AppUser user = null;
-        AppUser user2 = null;
-        try{
-            user = userService.getUserById(follower).get();
-            user2 = userService.getUserById(following).get();
-            user.getFollowers().add(user2);
-        }catch (Exception exception){
-            log.error("error {}", exception.getMessage());
+    public  ResponseEntity<?> follow(@PathVariable int follower, @PathVariable int following) throws InterruptedException {
+        AppUser user = userService.getUserById(follower).get();
+        AppUser user1 = userService.getUserById(following).get();
+        if(user.getEmail() == null || user1.getEmail() == null || user.getEmail() == ""){
+            return  ResponseEntity.badRequest().body(messages.put("Error_message", "Please provide valid id's"));
         }
-        return ResponseEntity.ok().body(userService.registerUser(user));
+        System.out.println(follower + " " + following);
+       if(userService.followUser(follower,following))
+              return ResponseEntity.ok().body(messages.put("message", "Successfully followed user"));
+        return  ResponseEntity.badRequest().body(messages.put("Error_message", "We are enable to follow the user"));
+
     }
 
-    @PostMapping("/adminRole/{email}")
+    @PutMapping("/adminRole/{email}")
     public AppUser addRolToUser( @PathVariable String email){
         return userService.addRoleTOUser(email);
     }
     @GetMapping("/following/{followerId}")
     public  ResponseEntity<List<AppUser>> getFollowings( @PathVariable  int followerId){
-
         return ResponseEntity.ok(userService.getFollowings(followerId));
 
     }
@@ -96,7 +86,7 @@ public class UserController {
        return ResponseEntity.ok(userService.getFollowers(userId));
 
     }
-    @GetMapping("/user/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<AppUser> getUserById( @PathVariable  int id){
         ResponseEntity<AppUser>  appUserResponseEntity = null;
         try{

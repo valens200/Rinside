@@ -32,10 +32,7 @@ public class MessageController {
     public  List<Message> getMessagesByRoom(@PathVariable String room){
         return userService.getMessageByRoom(room);
     }
-    @GetMapping("/{room}")
-    public List<Message> getMessages(@PathVariable String room){
-        return userService.getAllMessages();
-    }
+
     @PostMapping("/save_message")
     public Message postMessage(@RequestBody Message message){
         log.info("message : {}", message);

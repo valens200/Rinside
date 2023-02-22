@@ -200,4 +200,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.getFollowers(userId);
     }
 
+    @Override
+    public boolean followUser(int followerId, int followingId) {
+        boolean result = true;
+        try{
+           userRepository.followUser(followerId, followingId);
+        }catch (Exception exception){
+            result = false;
+            System.out.println("Error : " + exception.getMessage());
+        }
+        return result;
+    }
+
 }

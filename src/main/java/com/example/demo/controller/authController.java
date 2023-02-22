@@ -10,6 +10,7 @@ import com.example.demo.utils.LoginRequest;
 import com.example.demo.utils.SignUpTokenGenerator;
 import com.example.demo.utils.TokenGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
+@Api("Restaurant authentication controller")
 @RestController
 @Slf4j
 @RequestMapping("/auth")

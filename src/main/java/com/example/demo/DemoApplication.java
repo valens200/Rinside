@@ -17,18 +17,5 @@ public class DemoApplication {
 	PasswordEncoder passwordEncoder(){
 		return new BCryptPasswordEncoder();
 	}
-	@Bean
-	public WebMvcConfigurer webMvcConfigurer(){
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedOrigins("*")
-						.allowedOriginPatterns("*")
-						.allowedMethods("POST", "PUT", "DELETE", "PUT", "PROPFIND")
-						.allowCredentials(false);
-			}
-		};
 
-	}
 }
