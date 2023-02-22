@@ -1,6 +1,4 @@
 package com.example.demo.controller;
-
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -23,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -36,16 +33,14 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/auth")
 public class authController {
-
     Map<String, String> messages = new HashMap<>();
     @Autowired
     UserDetailsService userDetailsService;
 
     @Autowired
     AuthenticationManager authenticationManager;
-    @Autowired
+        @Autowired
     AlgorithmGenerator algorithmGenerator;
-
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
     @Autowired
@@ -53,7 +48,7 @@ public class authController {
 
 
     @PostMapping("/register")
-    public AppUser registerUser(@RequestBody AppUser user, HttpServletResponse response, HttpServletRequest request) throws IOException {
+    public ResponseEntity<?> registerUser(@RequestBody AppUser user, HttpServletResponse response, HttpServletRequest request) throws IOException {
         String inputs[] = new String[]{user.getPassword(), user.getEmail(), user.getUserName()};
         for (int i = 0; i < inputs.length; i++) {
             if (inputs[i] == "" || inputs[i] == null) {
@@ -61,7 +56,7 @@ public class authController {
                 messages.put("error_message", "Please fill out all the fields are required");
                 response.setStatus(400);
                 new ObjectMapper().writeValue(response.getOutputStream(), messages);
-                return null;
+                return ResponseEntity.ok(messages);
             }
         }
         AppUser isUserAvailable = userService.findByEmail(user.getEmail());
@@ -70,7 +65,7 @@ public class authController {
             response.setStatus(400);
             messages.put("error_message", "Account with that email already registered please try another");
             new ObjectMapper().writeValue(response.getOutputStream(), messages);
-            return null;
+            return ResponseEntity.ok(messages);
         }
         messages.clear();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -86,13 +81,12 @@ public class authController {
         SignUpTokenGenerator signUpTokenGenerator = new SignUpTokenGenerator(registeredUser, roles, authorities, algorithmGenerator);
         String access_token = signUpTokenGenerator.getAccessTOken(response, request);
         String refresh_token = signUpTokenGenerator.getRefreshToken(request, response);
-        messages.put("access_Token", access_token);
-        messages.put("refresh_Token", refresh_token);
-        messages.put("username", registeredUser.getUserName());
-        messages.put("email", registeredUser.getEmail());
+
+        registeredUser.setAccessToken(access_token);
+        registeredUser.setRefreshToken(refresh_token);
         new ObjectMapper().writeValue(response.getOutputStream(), messages);
         response.setStatus(200);
-        return null;
+        return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/login")
@@ -108,9 +102,9 @@ public class authController {
                 }
 
             }
-
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
             UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getEmail());
+            System.out.println("user" + user);
 
             TokenGenerator tokenGenerator1 = new TokenGenerator(user, algorithmGenerator);
             String access_token = tokenGenerator1.getAccessToken(response, request);
@@ -130,7 +124,6 @@ public class authController {
             messages.put("error_message", exception.getMessage());
             messages.put("message", "Invalid email or password");
             new ObjectMapper().writeValue(response.getOutputStream(), messages);
-
         }
     }
     @PostMapping("/validate/{token}")

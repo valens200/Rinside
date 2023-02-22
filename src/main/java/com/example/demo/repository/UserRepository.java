@@ -3,13 +3,15 @@ package com.example.demo.repository;
 import com.example.demo.models.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
 
+@Component
 public interface UserRepository  extends JpaRepository<AppUser , Integer> {
      public  AppUser findByEmail(String username);
-
      @Query(
              nativeQuery = true,
              value = "select * from users where user_id in(select following_id from users_followers where follower_id = ?1)"

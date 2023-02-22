@@ -15,7 +15,6 @@ import javax.persistence.*;
 @Slf4j
 @Table(name = "subUsers")
 public class SubUser {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;

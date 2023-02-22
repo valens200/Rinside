@@ -44,7 +44,7 @@ public class SecurityConfiguration  extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
         .authorizeHttpRequests().anyRequest().permitAll();
 //                        .anyRequest().hasAnyAuthority("USER", "ADMIN");
-        http.addFilterBefore( customAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore( customAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }
 

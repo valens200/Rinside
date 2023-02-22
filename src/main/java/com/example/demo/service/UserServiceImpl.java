@@ -58,6 +58,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public AppUser registerUser(AppUser user)  throws SaveUSerException{
+        user.setStatus("active");
         AppUser savedUSer = userRepository.save(user);
         if(savedUSer.equals(null)){
             throw  new SaveUSerException("Enable to save the user");
@@ -147,9 +148,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Optional<Post> getPostById(long id) throws  NotFoundException {
         Optional<Post> post =  postRepository.findById(id);
-        if(post == null)
+        if(post.get().getEmail() == null || post.get().getEmail() == ""){
             throw  new NotFoundException("The post with that id not found");
-        return post;
+        }else{
+            return post;
+        }
     }
     @Override
     public Comment getCommentByCommentId(long id) throws NotFoundException {

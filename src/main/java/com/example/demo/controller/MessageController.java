@@ -22,7 +22,7 @@ public class MessageController {
     public Message greet(@Payload Message message){
         log.info("hello");
         log.info("message {}", message);
-        return message;
+        return   message;
     }
     @GetMapping("/messages")
     public  List<Message> getMessages(){

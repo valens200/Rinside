@@ -1,11 +1,10 @@
 package com.example.demo.models;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.*;
@@ -27,6 +26,13 @@ public class AppUser {
    @GeneratedValue(strategy = GenerationType.AUTO)
    @Column(name = "userId")
     private int userId;
+
+   @Column(name = "access_token")
+   @Nullable
+   private String accessToken;
+   @Column(name = "refresh_token")
+   @Nullable
+   private String refreshToken;
    @Column(name = "userName", nullable = false)
     private String userName;
    @Column(name = "email", nullable = false)

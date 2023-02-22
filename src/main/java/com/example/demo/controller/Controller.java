@@ -16,5 +16,5 @@ import java.util.Map;
 @AllArgsConstructor
 @MappedSuperclass
 public class Controller {
-    private Map<String, String> message = new HashMap<>();
+    public Map<String, String> message = new HashMap<>();
 }
